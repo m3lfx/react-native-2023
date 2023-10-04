@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native'
-import { Container, VStack, Input, Heading, Text, Icon, NativeBaseProvider, extendTheme } from "native-base";
+import { Container, VStack, Input, Heading, Text, Icon, NativeBaseProvider, extendTheme, SmallCloseIcon } from "native-base";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductList from './ProductList'
+import SearchedProduct from "./SearchedProduct";
 const data = require('../assets/data/products.json')
 var { width, height } = Dimensions.get("window")
 
@@ -19,12 +20,33 @@ const theme = extendTheme({ colors: newColorTheme });
 const ProductContainer = () => {
 
   const [products, setProducts] = useState([])
+
+  const [productsFiltered, setProductsFiltered] = useState([]);
+  const [focus, setFocus] = useState();
   useEffect(() => {
     setProducts(data);
+    setProductsFiltered(data);
+    setFocus(false);
     return () => {
       setProducts([])
+      setProductsFiltered([]);
+      setFocus();
     }
   }, [])
+
+  const searchProduct = (text) => {
+    setProductsFiltered(
+      products.filter((i) => i.name.toLowerCase().includes(text.toLowerCase()))
+    )
+  }
+  const openList = () => {
+    setFocus(true);
+  }
+
+  const onBlur = () => {
+    setFocus(false);
+  }
+
   return (
     <NativeBaseProvider theme={theme}>
       <Container>
@@ -36,10 +58,24 @@ const ProductContainer = () => {
           </Header> */}
         <VStack w="100%" space={5} alignSelf="center">
           <Heading fontSize="lg">Search</Heading>
-          <Input placeholder="Search" variant="filled" width="100%" borderRadius="10" py="1" px="2" InputLeftElement={<Icon ml="2" size="4" color="gray.400" as={<Ionicons name="ios-search" />} />} />
+          <Input
+            onFocus={openList}
+            onChangeText={(text) => searchProduct(text)}
+            placeholder="Search"
+            variant="filled"
+            width="100%"
+            borderRadius="10"
+            py="1" px="2"
+            InputLeftElement={<Icon ml="2" size="4" color="gray.400" as={<Ionicons name="ios-search" />} />}
+            InputRightElement={focus == true ? <SmallCloseIcon onPress={onBlur} /> : null}
+          />
         </VStack>
-        <View>
-        
+        {focus === true ? (
+                <SearchedProduct 
+                    productsFiltered = {productsFiltered}
+                />
+            ) : (
+
           <View style={styles.listContainer} >
             <FlatList
               //    horizontal
@@ -49,8 +85,8 @@ const ProductContainer = () => {
               renderItem={({ item }) => <ProductList key={item.id} item={item} />}
               keyExtractor={item => item.name}
             />
-          </View>
-        </View>
+          </View>)}
+      
       </Container>
     </NativeBaseProvider>
   )
