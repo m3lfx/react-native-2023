@@ -40,7 +40,7 @@ const ProductCard = (props) => {
 const styles = StyleSheet.create({
     container: {
         width: width / 2 - 20,
-        height: width / 1.7,
+        height: width / 2 + 30 ,
         padding: 10,
         borderRadius: 10,
         marginTop: 55,

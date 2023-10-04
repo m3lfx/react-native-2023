@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, FlatList, ActivityIndicator, Dimensions } from 'react-native'
-import { Container, VStack, Input, Heading, Text, Icon, NativeBaseProvider, extendTheme, SmallCloseIcon } from "native-base";
+import { Container, VStack, Input, Heading, Text, Icon, NativeBaseProvider, extendTheme, SmallCloseIcon, Center, ScrollView } from "native-base";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductList from './ProductList'
 import SearchedProduct from "./SearchedProduct";
 import Banner from "../Shared/Banner";
+import CategoryFilter from "./CategoryFilter";
 
 const data = require('../assets/data/products.json')
+const productCategories = require('../assets/data/categories.json')
 var { width, height } = Dimensions.get("window")
 
-const newColorTheme = {
-  brand: {
-    900: "#8287af",
-    800: "#7c83db",
-    700: "#b3bef6",
-  },
-};
-const theme = extendTheme({ colors: newColorTheme });
+
 
 
 const ProductContainer = () => {
@@ -25,14 +20,26 @@ const ProductContainer = () => {
 
   const [productsFiltered, setProductsFiltered] = useState([]);
   const [focus, setFocus] = useState();
+
+  const [categories, setCategories] = useState([]);
+  const [active, setActive] = useState([]);
+  const [initialState, setInitialState] = useState([])
+  const [productsCtg, setProductsCtg] = useState([])
+
   useEffect(() => {
     setProducts(data);
     setProductsFiltered(data);
     setFocus(false);
+    setActive(-1)
+    setInitialState(data);
+    setCategories(productCategories)
     return () => {
       setProducts([])
       setProductsFiltered([]);
       setFocus(false);
+      setCategories([])
+      setActive()
+      setInitialState();
     }
   }, [])
 
@@ -49,9 +56,23 @@ const ProductContainer = () => {
     setFocus(false);
   }
 
+  const changeCtg = (ctg) => {
+
+    {
+      ctg === "all"
+        ? [setProductsCtg(initialState), setActive(true)]
+        : [
+          setProductsCtg(
+            products.filter((i) => i.category.$oid === ctg),
+            setActive(true)
+          ),
+        ];
+    }
+  };
+
   return (
-    <NativeBaseProvider theme={theme}>
-      <Container>
+    // <NativeBaseProvider theme={theme}>
+      <Container flex={1}>
         {/* <Header searchbar rounded >
               <Item>
                   <SearchIcon />
@@ -59,7 +80,7 @@ const ProductContainer = () => {
               </Item>
           </Header> */}
         <VStack w="100%" space={5} alignSelf="center">
-          <Heading fontSize="lg">Search</Heading>
+          {/* <Heading fontSize="lg">Search</Heading> */}
           <Input
             onFocus={openList}
             onChangeText={(text) => searchProduct(text)}
@@ -73,25 +94,48 @@ const ProductContainer = () => {
           />
         </VStack>
         {focus === true ? (
-                <SearchedProduct 
-                    productsFiltered = {productsFiltered}
-                />
-            ) : (
+          <SearchedProduct
+            productsFiltered={productsFiltered}
+          />
+        ) : (
+          <ScrollView>
 
-          <View style={styles.listContainer} >
-            <Banner />
-            <FlatList
-              //    horizontal
-              columnWrapperStyle={{ justifyContent: 'space-between' }}
-              numColumns={2}
-              data={products}
-              renderItem={({ item }) => <ProductList key={item.id} item={item} />}
-              keyExtractor={item => item.name}
+          <View  >
+            <View>
+              <Banner />
+            </View>
+            <View>
+            <CategoryFilter
+              categories={categories}
+              categoryFilter={changeCtg}
+              productsCtg={productsCtg}
+              active={active}
+              setActive={setActive}
             />
-          </View>)}
-      
+            </View>
+
+            {productsCtg.length > 0 ? (
+              <View style={styles.listContainer}>
+                {productsCtg.map((item) => {
+                  return (
+                    <ProductList
+                      // navigation={props.navigation}
+                      key={item._id.$oid}
+                      item={item}
+                    />
+                  )
+                })}
+              </View>
+            ) : (
+              <View style={[styles.center, { height: height / 2 }]}>
+                <Text>No products found</Text>
+              </View>
+            )}
+          </View>
+          </ScrollView>)}
+
       </Container>
-    </NativeBaseProvider>
+    // </NativeBaseProvider>
   )
 }
 
@@ -101,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "gainsboro",
   },
   listContainer: {
-    height: height,
+    //   height: "100%",
     flex: 1,
     flexDirection: "row",
     alignItems: "flex-start",
@@ -110,7 +154,8 @@ const styles = StyleSheet.create({
   },
   center: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    flex: 1
   }
 });
 
