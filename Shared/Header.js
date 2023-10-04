@@ -1,18 +1,18 @@
 import React from "react"
-import { StyleSheet, Image,  View } from "react-native"
+import { StyleSheet, Image, View } from "react-native"
 
 const Header = () => {
-    return(
-       <View>
-        
+    return (
+        <View>
+
             <Image
                 source={require("../assets/Logo.png")}
                 resizeMode="contain"
                 style={{ height: 50 }}
             />
-        
-      
-         </View>
+
+
+        </View>
     )
 }
 
