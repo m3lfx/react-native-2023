@@ -4,6 +4,8 @@ import { Container, VStack, Input, Heading, Text, Icon, NativeBaseProvider, exte
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductList from './ProductList'
 import SearchedProduct from "./SearchedProduct";
+import Banner from "../Shared/Banner";
+
 const data = require('../assets/data/products.json')
 var { width, height } = Dimensions.get("window")
 
@@ -30,7 +32,7 @@ const ProductContainer = () => {
     return () => {
       setProducts([])
       setProductsFiltered([]);
-      setFocus();
+      setFocus(false);
     }
   }, [])
 
@@ -77,6 +79,7 @@ const ProductContainer = () => {
             ) : (
 
           <View style={styles.listContainer} >
+            <Banner />
             <FlatList
               //    horizontal
               columnWrapperStyle={{ justifyContent: 'space-between' }}
