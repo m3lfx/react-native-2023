@@ -11,9 +11,6 @@ const data = require('../assets/data/products.json')
 const productCategories = require('../assets/data/categories.json')
 var { width, height } = Dimensions.get("window")
 
-
-
-
 const ProductContainer = () => {
 
   const [products, setProducts] = useState([])
@@ -32,6 +29,7 @@ const ProductContainer = () => {
     setFocus(false);
     setActive(-1)
     setInitialState(data);
+    setProductsCtg(data);
     setCategories(productCategories)
     return () => {
       setProducts([])
@@ -72,13 +70,7 @@ const ProductContainer = () => {
 
   return (
     // <NativeBaseProvider theme={theme}>
-      <Container flex={1}>
-        {/* <Header searchbar rounded >
-              <Item>
-                  <SearchIcon />
-                  <Input placeholder="search" />
-              </Item>
-          </Header> */}
+    <Center>
         <VStack w="100%" space={5} alignSelf="center">
           {/* <Heading fontSize="lg">Search</Heading> */}
           <Input
@@ -100,41 +92,42 @@ const ProductContainer = () => {
         ) : (
           <ScrollView>
 
-          <View  >
-            <View>
-              <Banner />
-            </View>
-            <View>
-            <CategoryFilter
-              categories={categories}
-              categoryFilter={changeCtg}
-              productsCtg={productsCtg}
-              active={active}
-              setActive={setActive}
-            />
-            </View>
+            <View  >
+              <View>
+                <Banner />
+              </View>
+              <View>
+                <CategoryFilter
+                  categories={categories}
+                  categoryFilter={changeCtg}
+                  productsCtg={productsCtg}
+                  active={active}
+                  setActive={setActive}
+                />
+              </View>
 
-            {productsCtg.length > 0 ? (
-              <View style={styles.listContainer}>
-                {productsCtg.map((item) => {
-                  return (
-                    <ProductList
-                      // navigation={props.navigation}
-                      key={item._id.$oid}
-                      item={item}
-                    />
-                  )
-                })}
-              </View>
-            ) : (
-              <View style={[styles.center, { height: height / 2 }]}>
-                <Text>No products found</Text>
-              </View>
-            )}
-          </View>
+              {productsCtg.length > 0 ? (
+                <View style={styles.listContainer}>
+                  {productsCtg.map((item) => {
+                    return (
+                      <ProductList
+                        // navigation={props.navigation}
+                        key={item._id.$oid}
+                        item={item}
+                      />
+                    )
+                  })}
+                </View>
+              ) : (
+                <View style={[styles.center, { height: height / 2 }]}>
+                  <Text>No products found</Text>
+                </View>
+              )}
+            </View>
           </ScrollView>)}
 
-      </Container>
+     
+    </Center>
     // </NativeBaseProvider>
   )
 }
