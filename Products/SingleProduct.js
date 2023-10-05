@@ -1,15 +1,17 @@
 import React, {useState, useEffect} from "react";
 import { Image, View, StyleSheet, Text, ScrollView, Button } from "react-native";
-import {Left, Right, Container, H1} from 'native-base'
+import {Left, Right, Container, H1, Center} from 'native-base'
 
-const SingleProduct = (props) => {
-    const [item, setItem] = useState(props.route.params.item);
+const SingleProduct = ({route}) => {
+    const [item, setItem] = useState(route.params.item);
+    console.log(item)
     const [availability, setAvailability] = useState('')
 
     return (
-        <Container style={styles.container}>
+        <Center flexGrow={1}>
             <ScrollView style={{marginBottom: 80, padding: 5}}>
                 <View>
+                    {/* <Text>{item.name}</Text> */}
                     <Image 
                         source={{
                             uri: item.image ? item.image : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png'
@@ -20,14 +22,16 @@ const SingleProduct = (props) => {
                         
                 </View>
             </ScrollView>
-        </Container>
+        
+        </Center>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
-        height: '100%'
+        height: '100%',
+    
     },
     imageContainer: {
         backgroundColor: 'white',
@@ -36,7 +40,8 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 250
+        height: undefined,
+        aspectRatio: 1
     },
     contentContainer: {
         marginTop: 20,
