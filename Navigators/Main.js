@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
+import { useSelector, useDispatch } from 'react-redux'
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HomeNavigator from "./HomeNavigator";
+import Cart from "../Screens/Cart/Cart";
+import CartIcon from "../Shared/CartIcon";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,16 +37,20 @@ const Main = () => {
 
             <Tab.Screen
                 name="Cart"
-                component={HomeNavigator}
+                component={Cart}
                 options={{
                     tabBarIcon: ({ color }) => {
-                        return <Icon
-                            name="shopping-cart"
-                            style={{ position: "relative" }}
-                            color={color}
-                            size={30}
+                        return(
+                        <>
+                            <Icon
+                                name="shopping-cart"
+                                style={{ position: "relative" }}
+                                color={color}
+                                size={30}
 
-                        />
+                            />
+                            <CartIcon />
+                        </>)
                     }
                 }}
             />

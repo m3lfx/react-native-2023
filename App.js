@@ -4,6 +4,8 @@ import ProductContainer from './Products/ProductContainer';
 import Header from './Shared/Header';
 import { NativeBaseProvider, extendTheme } from "native-base";
 import { NavigationContainer } from '@react-navigation/native'
+import { Provider } from "react-redux";
+import store from "./Redux/Store";
 import Main from './Navigators/Main'
 const newColorTheme = {
   brand: {
@@ -17,15 +19,15 @@ const theme = extendTheme({ colors: newColorTheme });
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <NativeBaseProvider theme={theme}>
-        {/* <View style={styles.container}> */}
-          <Header />
-          <Main />
-          {/* <ProductContainer /> */}
-        {/* </View> */}
-      </NativeBaseProvider>
-    </NavigationContainer>
+    <Provider store={store}>
+        <NativeBaseProvider theme={theme}>
+          <NavigationContainer>
+            <Header />
+            <Main />
+            
+          </NavigationContainer>
+        </NativeBaseProvider>
+      </Provider>
   );
 }
 
