@@ -4,6 +4,7 @@ import ProductContainer from './Products/ProductContainer';
 import Header from './Shared/Header';
 import { NativeBaseProvider, extendTheme } from "native-base";
 import { NavigationContainer } from '@react-navigation/native'
+import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import store from "./Redux/Store";
 import Main from './Navigators/Main'
@@ -24,7 +25,7 @@ export default function App() {
           <NavigationContainer>
             <Header />
             <Main />
-            
+            <Toast />
           </NavigationContainer>
         </NativeBaseProvider>
       </Provider>

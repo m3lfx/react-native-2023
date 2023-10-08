@@ -6,6 +6,9 @@ import { Button } from "native-base";
 import FormContainer from "../../Shared/Form/FormContainer";
 import Input from "../../Shared/Form/Input";
 import Error from "../../Shared/Error";
+import axios from "axios";
+import baseURL from "../../assets/common/baseurl";
+import Toast from "react-native-toast-message";
 
 const Register = (props) => {
     const [email, setEmail] = useState("");
@@ -19,6 +22,37 @@ const Register = (props) => {
         if (email === "" || name === "" || phone === "" || password === "") {
             setError("Please fill in the form correctly");
         }
+        let user = {
+            name: name,
+            email: email,
+            password: password,
+            phone: phone,
+            isAdmin: false,
+          };
+          axios
+            .post(`${baseURL}users/register`, user)
+            .then((res) => {
+              if (res.status == 200) {
+                Toast.show({
+                  topOffset: 60,
+                  type: "success",
+                  text1: "Registration Succeeded",
+                  text2: "Please Login into your account",
+                });
+                setTimeout(() => {
+                  props.navigation.navigate("Login");
+                }, 500);
+              }
+            })
+            .catch((error) => {
+              Toast.show({
+                position: 'bottom',
+                bottomOffset: 20,
+                type: "error",
+                text1: "Something went wrong",
+                text2: "Please try again",
+              });
+            });
     }
 
     return (
