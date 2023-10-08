@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Dimensions, FlatList, StyleSheet, TouchableOpacity, TouchableHighlight, Pressable } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigation } from '@react-navigation/native';
 import * as actions from '../../Redux/Actions/cartActions'
 import {
     Container,
@@ -23,6 +24,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 var { height, width } = Dimensions.get("window");
 
 const Cart = (props) => {
+    const navigation = useNavigation()
     var total = 0;
     const cartItems = useSelector(state => state.cartItems)
     cartItems.forEach(cart => {
@@ -111,7 +113,8 @@ const Cart = (props) => {
                     <Button alignItems="center" onPress={() => dispatch(actions.clearCart())} > Clear</Button>
                 </HStack>
                 <HStack justifyContent="space-between">
-                    <Button alignItems="center" colorScheme="primary">Check Out</Button>
+                    {/* <Button alignItems="center" colorScheme="primary">Check Out</Button> */}
+                    <Button alignItems="center" colorScheme="primary" onPress={() => navigation.navigate('Checkout')}>Check Out</Button>
                 </HStack>
             </VStack>
         </>
