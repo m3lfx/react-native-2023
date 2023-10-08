@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import * as actions from '../Redux/Actions/cartActions'
 import { useSelector, useDispatch } from 'react-redux'
+import Toast from 'react-native-toast-message'
 
 var { width, } = Dimensions.get("window")
 const ProductCard = (props) => {
@@ -40,7 +41,12 @@ const ProductCard = (props) => {
                         title={'Add'}
                         color={'green'}
                         onPress={() => {
-                            dispatch(actions.addToCart({...props, quantity: 1, }))
+                            dispatch(actions.addToCart({...props, quantity: 1, })), Toast.show({
+                                topOffset: 60,
+                                type: "success",
+                                text1: `${name} added to Cart`,
+                                text2: "Go to your cart to complete order"
+                            })
                         }} 
                     > </Button>
                 </View>
