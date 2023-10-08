@@ -1,25 +1,20 @@
 import React, {useState} from 'react'
-
 import { View, StyleSheet, Dimensions, ScrollView, Button } from "react-native";
 import { Text, HStack, VStack, Avatar, Spacer, Center } from "native-base";
 
 import * as actions from "../../../Redux/Actions/cartActions";
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-
-
-
-
 var { width, height } = Dimensions.get("window");
 
 const Confirm = (props) => {
 const confirm = props.route.params;
-console.log(confirm.order.order.orderItems)
+console.log(confirm)
     return (
         <Center width={"90%"}>
         <Text style={styles.title}>items</Text>
               
-              {confirm.order.order.orderItems.map((item) => {
+              {confirm ? confirm.order.order.orderItems.map((item) => {
                 return (
                     // console.log(x)
                     <HStack space={[2, 3]} justifyContent="space-between">
@@ -48,7 +43,7 @@ console.log(confirm.order.order.orderItems)
                     </Text>
                     </HStack>
                 )
-              })}           
+              }): null}           
             </Center>
 
     )

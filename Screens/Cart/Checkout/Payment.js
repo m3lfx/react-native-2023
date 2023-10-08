@@ -39,10 +39,9 @@ const paymentCards = [
 const Payment = (props) => {
 
     const order = props.route.params;
-    // console.log("order", order)
-
     const [selected, setSelected] = useState('');
     const [card, setCard] = useState('');
+    
     const navigation = useNavigation()
     return (
         <Center  >
@@ -106,7 +105,7 @@ const Payment = (props) => {
             <View style={{ marginTop: 60, alignSelf: 'center' }}>
                 <Button
                     title={"Confirm"}
-                    onPress={() => navigation.navigate("Confirm", { order })} />
+                    onPress={() => navigation.navigate("Confirm", { order: order })} />
             </View>
         </Center>
     )
