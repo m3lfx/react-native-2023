@@ -21,6 +21,7 @@ import axios from "axios"
 import baseURL from "../../assets/common/baseurl"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Toast from "react-native-toast-message";
+import EasyButton from "../../Shared/StyledComponents/EasyButton";
 
 var { height, width } = Dimensions.get("window")
 
@@ -132,6 +133,32 @@ const Products = (props) => {
 
     return (
         <Box flex={1}>
+            <View style={styles.buttonContainer}>
+            <EasyButton
+                secondary
+                medium
+                onPress={() => props.navigation.navigate("Orders")}
+            >
+                <Icon name="shopping-bag" size={18} color="white" />
+                <Text style={styles.buttonText}>Orders</Text>
+            </EasyButton>
+            <EasyButton
+                secondary
+                medium
+                onPress={() => props.navigation.navigate("ProductForm")}
+            >
+                <Icon name="plus" size={18} color="white" />
+                <Text style={styles.buttonText}>Products</Text>
+            </EasyButton>
+            <EasyButton
+                secondary
+                medium
+                onPress={() => props.navigation.navigate("Categories")}
+            >
+                <Icon name="plus" size={18} color="white" />
+                <Text style={styles.buttonText}>Categories</Text>
+            </EasyButton>
+        </View>
             <Searchbar width="80%"
                 placeholder="Search"
                 containerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 5}}
