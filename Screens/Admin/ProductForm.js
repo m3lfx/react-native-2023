@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { 
-    View, 
+import {
+    View,
     Text,
     Image,
     StyleSheet,
     TouchableOpacity,
     Platform
 } from "react-native"
-import { Item, Picker, Select } from "native-base"
+import { Item, Picker, Select, Box } from "native-base"
 import FormContainer from "../../Shared/Form/FormContainer"
 import Input from "../../Shared/Form/Input"
 import EasyButton from "../../Shared/StyledComponents/EasyButton"
@@ -15,12 +15,14 @@ import EasyButton from "../../Shared/StyledComponents/EasyButton"
 import Icon from "react-native-vector-icons/FontAwesome"
 import Toast from "react-native-toast-message"
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import baseURL from "../../assets/common/baseurl" 
+import baseURL from "../../assets/common/baseurl"
+import Error from "../../Shared/Error"
 import axios from "axios"
+import * as ImagePicker from "expo-image-picker"
 
 
 const ProductForm = (props) => {
-    
+
     const [pickerValue, setPickerValue] = useState();
     const [brand, setBrand] = useState();
     const [name, setName] = useState();
@@ -41,89 +43,135 @@ const ProductForm = (props) => {
 
     useEffect(() => {
         AsyncStorage.getItem("jwt")
-                   .then((res) => {
-                       setToken(res)
-                   })
-                   .catch((error) => console.log(error))
-       
+            .then((res) => {
+                setToken(res)
+            })
+            .catch((error) => console.log(error))
+
         axios
-                   .get(`${baseURL}categories`)
-                   .then((res) => setCategories(res.data))
-                   .catch((error) => alert("Error to load categories"));
+            .get(`${baseURL}categories`)
+            .then((res) => setCategories(res.data))
+            .catch((error) => alert("Error to load categories"));
+        (async () => {
+            if (Platform.OS !== "web") {
+                const {
+                    status,
+                } = await ImagePicker.requestCameraPermissionsAsync();
+                if (status !== "granted") {
+                    alert("Sorry, we need camera roll permissions to make this work!")
+                }
+            }
+        })();
         return () => {
-                   setCategories([])
-               }
-           }, [])
-    
+            setCategories([])
+        }
+    }, [])
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1
+        });
+
+        if (!result.canceled) {
+            console.log(result.assets)
+            setMainImage(result.assets[0].uri);
+            setImage(result.assets[0].uri);
+        }
+    };
+
     return (
-       <FormContainer title="Add Product">
-           <View style={styles.imageContainer}>
-               <Image style={styles.image} source={{uri: mainImage}}/>
-             
-           </View>
-           <View style={styles.label}>
-               <Text style={{ textDecorationLine: "underline"}}>Brand</Text>
-           </View>
-           <Input 
-            placeholder="Brand"
-            name="brand"
-            id="brand"
-            value={brand}
-            onChangeText={(text) => setBrand(text)}
-           />
-           <View style={styles.label}>
-               <Text style={{ textDecorationLine: "underline"}}>Name</Text>
-           </View>
-           <Input 
-            placeholder="Name"
-            name="name"
-            id="name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-           />
+        <FormContainer title="Add Product">
+            <View style={styles.imageContainer}>
+                <Image style={styles.image} source={{ uri: mainImage }} />
+                <TouchableOpacity
+                    onPress={pickImage}
+                    style={styles.imagePicker}>
+                    <Icon style={{ color: "white" }} name="camera" />
+                </TouchableOpacity>
+            </View>
             <View style={styles.label}>
-               <Text style={{ textDecorationLine: "underline"}}>Price</Text>
-           </View>
-           <Input 
-            placeholder="Price"
-            name="price"
-            id="price"
-            value={price}
-            keyboardType={"numeric"}
-            onChangeText={(text) => setPrice(text)}
-           />
+                <Text style={{ textDecorationLine: "underline" }}>Brand</Text>
+            </View>
+            <Input
+                placeholder="Brand"
+                name="brand"
+                id="brand"
+                value={brand}
+                onChangeText={(text) => setBrand(text)}
+            />
             <View style={styles.label}>
-               <Text style={{ textDecorationLine: "underline"}}>Count in Stock</Text>
-           </View>
-           <Input 
-            placeholder="Stock"
-            name="stock"
-            id="stock"
-            value={countInStock}
-            keyboardType={"numeric"}
-            onChangeText={(text) => setCountInStock(text)}
-           />
+                <Text style={{ textDecorationLine: "underline" }}>Name</Text>
+            </View>
+            <Input
+                placeholder="Name"
+                name="name"
+                id="name"
+                value={name}
+                onChangeText={(text) => setName(text)}
+            />
             <View style={styles.label}>
-               <Text style={{ textDecorationLine: "underline"}}>Description</Text>
-           </View>
-           <Input 
-            placeholder="Description"
-            name="description"
-            id="description"
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-           />
-           
-           
-           <View style={styles.buttonContainer}>
-               <EasyButton
-                large
-                primary
-                onPress={() => addProduct()}               
-               ><Text style={styles.buttonText}>Confirm</Text>
-               </EasyButton>
-           </View>
-       </FormContainer>
+                <Text style={{ textDecorationLine: "underline" }}>Price</Text>
+            </View>
+            <Input
+                placeholder="Price"
+                name="price"
+                id="price"
+                value={price}
+                keyboardType={"numeric"}
+                onChangeText={(text) => setPrice(text)}
+            />
+            <View style={styles.label}>
+                <Text style={{ textDecorationLine: "underline" }}>Count in Stock</Text>
+            </View>
+            <Input
+                placeholder="Stock"
+                name="stock"
+                id="stock"
+                value={countInStock}
+                keyboardType={"numeric"}
+                onChangeText={(text) => setCountInStock(text)}
+            />
+            <View style={styles.label}>
+                <Text style={{ textDecorationLine: "underline" }}>Description</Text>
+            </View>
+            <Input
+                placeholder="Description"
+                name="description"
+                id="description"
+                value={description}
+                onChangeText={(text) => setDescription(text)}
+            />
+            <Box>
+                <Select
+                    minWidth="90%" placeholder="Select your Category"
+                    selectedValue={pickerValue}
+                    onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
+                >
+                    {categories.map((c, index) => {
+                        return (
+                            <Select.Item
+                                key={c.id}
+                                label={c.name}
+                                value={c.id} />
+                        )
+                    })}
+
+                </Select>
+            </Box>
+
+            {err ? <Error message={err} /> : null}
+            <View style={styles.buttonContainer}>
+                <EasyButton
+                    large
+                    primary
+                    onPress={() => addProduct()}
+                ><Text style={styles.buttonText}>Confirm</Text>
+                </EasyButton>
+            </View>
+        </FormContainer>
     )
 }
 
