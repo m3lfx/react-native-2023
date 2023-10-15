@@ -19,6 +19,7 @@ import baseURL from "../../assets/common/baseurl"
 import Error from "../../Shared/Error"
 import axios from "axios"
 import * as ImagePicker from "expo-image-picker"
+import { useFocusEffect, useNavigation } from "@react-navigation/native"
 
 
 const ProductForm = (props) => {
@@ -40,6 +41,8 @@ const ProductForm = (props) => {
     const [richDescription, setRichDescription] = useState();
     const [numReviews, setNumReviews] = useState(0);
     const [item, setItem] = useState(null);
+
+    let navigation = useNavigation()
 
     useEffect(() => {
         AsyncStorage.getItem("jwt")
@@ -80,140 +83,197 @@ const ProductForm = (props) => {
             setMainImage(result.assets[0].uri);
             setImage(result.assets[0].uri);
         }
-    };
-
-    return (
-        <FormContainer title="Add Product">
-            <View style={styles.imageContainer}>
-                <Image style={styles.image} source={{ uri: mainImage }} />
-                <TouchableOpacity
-                    onPress={pickImage}
-                    style={styles.imagePicker}>
-                    <Icon style={{ color: "white" }} name="camera" />
-                </TouchableOpacity>
-            </View>
-            <View style={styles.label}>
-                <Text style={{ textDecorationLine: "underline" }}>Brand</Text>
-            </View>
-            <Input
-                placeholder="Brand"
-                name="brand"
-                id="brand"
-                value={brand}
-                onChangeText={(text) => setBrand(text)}
-            />
-            <View style={styles.label}>
-                <Text style={{ textDecorationLine: "underline" }}>Name</Text>
-            </View>
-            <Input
-                placeholder="Name"
-                name="name"
-                id="name"
-                value={name}
-                onChangeText={(text) => setName(text)}
-            />
-            <View style={styles.label}>
-                <Text style={{ textDecorationLine: "underline" }}>Price</Text>
-            </View>
-            <Input
-                placeholder="Price"
-                name="price"
-                id="price"
-                value={price}
-                keyboardType={"numeric"}
-                onChangeText={(text) => setPrice(text)}
-            />
-            <View style={styles.label}>
-                <Text style={{ textDecorationLine: "underline" }}>Count in Stock</Text>
-            </View>
-            <Input
-                placeholder="Stock"
-                name="stock"
-                id="stock"
-                value={countInStock}
-                keyboardType={"numeric"}
-                onChangeText={(text) => setCountInStock(text)}
-            />
-            <View style={styles.label}>
-                <Text style={{ textDecorationLine: "underline" }}>Description</Text>
-            </View>
-            <Input
-                placeholder="Description"
-                name="description"
-                id="description"
-                value={description}
-                onChangeText={(text) => setDescription(text)}
-            />
-            <Box>
-                <Select
-                    minWidth="90%" placeholder="Select your Category"
-                    selectedValue={pickerValue}
-                    onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
-                >
-                    {categories.map((c, index) => {
-                        return (
-                            <Select.Item
-                                key={c.id}
-                                label={c.name}
-                                value={c.id} />
-                        )
-                    })}
-
-                </Select>
-            </Box>
-
-            {err ? <Error message={err} /> : null}
-            <View style={styles.buttonContainer}>
-                <EasyButton
-                    large
-                    primary
-                    onPress={() => addProduct()}
-                ><Text style={styles.buttonText}>Confirm</Text>
-                </EasyButton>
-            </View>
-        </FormContainer>
-    )
-}
-
-const styles = StyleSheet.create({
-    label: {
-        width: "80%",
-        marginTop: 10
-    },
-    buttonContainer: {
-        width: "80%",
-        marginBottom: 80,
-        marginTop: 20,
-        alignItems: "center"
-    },
-    buttonText: {
-        color: "white"
-    },
-    imageContainer: {
-        width: 200,
-        height: 200,
-        borderStyle: "solid",
-        borderWidth: 8,
-        padding: 0,
-        justifyContent: "center",
-        borderRadius: 100,
-        borderColor: "#E0E0E0",
-        elevation: 10
-    },
-    image: {
-        width: "100%",
-        height: "100%",
-        borderRadius: 100
-    },
-    imagePicker: {
-        position: "absolute",
-        right: 5,
-        bottom: 5,
-        backgroundColor: "grey",
-        padding: 8,
-        borderRadius: 100,
-        elevation: 20
     }
-})
 
-export default ProductForm;
+    const addProduct = () => {
+        if (
+            name == "" ||
+            brand == "" ||
+            price == "" ||
+            description == "" ||
+            category == "" ||
+            countInStock == ""
+        ) {
+            setError("Please fill in the form correctly")
+        }
+
+        let formData = new FormData();
+
+
+        formData.append("name", name);
+        formData.append("brand", brand);
+        formData.append("price", price);
+        formData.append("description", description);
+        formData.append("category", category);
+        formData.append("countInStock", countInStock);
+        formData.append("richDescription", richDescription);
+        formData.append("rating", rating);
+        formData.append("numReviews", numReviews);
+        formData.append("isFeatured", isFeatured);
+
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`
+            }
+        }
+        axios
+            .post(`${baseURL}products`, formData, config)
+            .then((res) => {
+                if (res.status == 200 || res.status == 201) {
+                    Toast.show({
+                        topOffset: 60,
+                        type: "success",
+                        text1: "New Product added",
+                        text2: ""
+                    });
+                    setTimeout(() => {
+                        navigation.navigate("Products");
+                    }, 500)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                Toast.show({
+                    topOffset: 60,
+                    type: "error",
+                    text1: "Something went wrong",
+                    text2: "Please try again"
+                })
+            })
+
+        return (
+            <FormContainer title="Add Product">
+                <View style={styles.imageContainer}>
+                    <Image style={styles.image} source={{ uri: mainImage }} />
+                    <TouchableOpacity
+                        onPress={pickImage}
+                        style={styles.imagePicker}>
+                        <Icon style={{ color: "white" }} name="camera" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.label}>
+                    <Text style={{ textDecorationLine: "underline" }}>Brand</Text>
+                </View>
+                <Input
+                    placeholder="Brand"
+                    name="brand"
+                    id="brand"
+                    value={brand}
+                    onChangeText={(text) => setBrand(text)}
+                />
+                <View style={styles.label}>
+                    <Text style={{ textDecorationLine: "underline" }}>Name</Text>
+                </View>
+                <Input
+                    placeholder="Name"
+                    name="name"
+                    id="name"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                />
+                <View style={styles.label}>
+                    <Text style={{ textDecorationLine: "underline" }}>Price</Text>
+                </View>
+                <Input
+                    placeholder="Price"
+                    name="price"
+                    id="price"
+                    value={price}
+                    keyboardType={"numeric"}
+                    onChangeText={(text) => setPrice(text)}
+                />
+                <View style={styles.label}>
+                    <Text style={{ textDecorationLine: "underline" }}>Count in Stock</Text>
+                </View>
+                <Input
+                    placeholder="Stock"
+                    name="stock"
+                    id="stock"
+                    value={countInStock}
+                    keyboardType={"numeric"}
+                    onChangeText={(text) => setCountInStock(text)}
+                />
+                <View style={styles.label}>
+                    <Text style={{ textDecorationLine: "underline" }}>Description</Text>
+                </View>
+                <Input
+                    placeholder="Description"
+                    name="description"
+                    id="description"
+                    value={description}
+                    onChangeText={(text) => setDescription(text)}
+                />
+                <Box>
+                    <Select
+                        minWidth="90%" placeholder="Select your Category"
+                        selectedValue={pickerValue}
+                        onValueChange={(e) => [setPickerValue(e), setCategory(e)]}
+                    >
+                        {categories.map((c, index) => {
+                            return (
+                                <Select.Item
+                                    key={c.id}
+                                    label={c.name}
+                                    value={c.id} />
+                            )
+                        })}
+
+                    </Select>
+                </Box>
+
+                {err ? <Error message={err} /> : null}
+                <View style={styles.buttonContainer}>
+                    <EasyButton
+                        large
+                        primary
+                        onPress={() => addProduct()}
+                    ><Text style={styles.buttonText}>Confirm</Text>
+                    </EasyButton>
+                </View>
+            </FormContainer>
+        )
+    }
+
+    const styles = StyleSheet.create({
+        label: {
+            width: "80%",
+            marginTop: 10
+        },
+        buttonContainer: {
+            width: "80%",
+            marginBottom: 80,
+            marginTop: 20,
+            alignItems: "center"
+        },
+        buttonText: {
+            color: "white"
+        },
+        imageContainer: {
+            width: 200,
+            height: 200,
+            borderStyle: "solid",
+            borderWidth: 8,
+            padding: 0,
+            justifyContent: "center",
+            borderRadius: 100,
+            borderColor: "#E0E0E0",
+            elevation: 10
+        },
+        image: {
+            width: "100%",
+            height: "100%",
+            borderRadius: 100
+        },
+        imagePicker: {
+            position: "absolute",
+            right: 5,
+            bottom: 5,
+            backgroundColor: "grey",
+            padding: 8,
+            borderRadius: 100,
+            elevation: 20
+        }
+    })
+
+    export default ProductForm;
