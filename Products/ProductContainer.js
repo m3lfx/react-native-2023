@@ -138,18 +138,20 @@ const ProductContainer = () => {
   }
 
   const changeCtg = (ctg) => {
+    console.log("Ctg", ctg)
 
     {
       ctg === "all"
         ? [setProductsCtg(initialState), setActive(true)]
         : [
           setProductsCtg(
-            products.filter((i) => i.category._id === ctg),
+            products.filter((i) => i.category !== null && i.category._id === ctg  ),
             setActive(true)
           ),
         ];
     }
   };
+  console.log(productsCtg)
 
   return (
     // <NativeBaseProvider theme={theme}>

@@ -1,21 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { Image, View, StyleSheet, Text, ScrollView, } from "react-native";
-import { Left, Right, Container, H1, Center, Button } from 'native-base'
+import { Left, Right, Container, H1, Center, Button,Heading } from 'native-base'
 import { useDispatch } from 'react-redux'
 import * as actions from '../Redux/Actions/cartActions'
 import Toast from "react-native-toast-message";
+import EasyButton from "../Shared/StyledComponents/EasyButton"
+import TrafficLight from "../Shared/StyledComponents/TrafficLight";
 
 const SingleProduct = ({ route }) => {
     const [item, setItem] = useState(route.params.item);
     console.log(item)
     const [availability, setAvailability] = useState('')
+    const [availabilityText, setAvailabilityText] = useState("")
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (item.countInStock == 0) {
+            setAvailability(<TrafficLight unavailable></TrafficLight>);
+            setAvailabilityText("Unvailable")
+        } else if (item.countInStock <= 5) {
+            setAvailability(<TrafficLight limited></TrafficLight>);
+            setAvailabilityText("Limited Stock")
+        } else {
+            setAvailability(<TrafficLight available></TrafficLight>);
+            setAvailabilityText("Available")
+        }
+
+        return () => {
+            setAvailability(null);
+            setAvailabilityText("");
+        }
+    }, [])
 
     return (
         <Center flexGrow={1}>
             <ScrollView style={{ marginBottom: 80, padding: 5 }}>
-                <View>
-                    {/* <Text>{item.name}</Text> */}
+                {/* <View>
+                   
                     <Image
                         source={{
                             uri: item.image ? item.image : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png'
@@ -23,16 +44,31 @@ const SingleProduct = ({ route }) => {
                         resizeMode="contain"
                         style={styles.image}
                     />
-                    <Button size="sm" onPress={() => {
-                        dispatch(actions.addToCart({...item, quantity: 1, })),
-                            Toast.show({
-                                topOffset: 60,
-                                type: "success",
-                                text1: `${item.name} added to Cart`,
-                                text2: "Go to your cart to complete order"
-                            })
-                    }}>Add</Button>
+                    <EasyButton
+                        primary
+                        medium onPress={() => {
+                            dispatch(actions.addToCart({ ...item, quantity: 1, })),
+                                Toast.show({
+                                    topOffset: 60,
+                                    type: "success",
+                                    text1: `${item.name} added to Cart`,
+                                    text2: "Go to your cart to complete order"
+                                })
+                        }}><Text style={{ color: "white"}}> Add</Text></EasyButton>
 
+                </View>  */}
+                <View style={styles.contentContainer}>
+                    <Heading style={styles.contentHeader} size='xl'>{item.name}</Heading>
+                    <Text style={styles.contentText}>{item.brand}</Text>
+                </View>
+                <View style={styles.availabilityContainer}>
+                    <View style={styles.availability}>
+                        <Text style={{ marginRight: 10 }}>
+                            Availability: {availabilityText}
+                        </Text>
+                        {availability}
+                    </View>
+                    <Text>{item.description}</Text>
                 </View>
             </ScrollView>
 

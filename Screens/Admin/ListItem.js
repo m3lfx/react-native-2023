@@ -12,25 +12,91 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome"
 import { useFocusEffect, useNavigation } from "@react-navigation/native"
+import EasyButton from "../../Shared/StyledComponents/EasyButton";
 
 
 var { width } = Dimensions.get("window");
 
-const ListItem = ({item, index}) => {
+const ListItem = ({item, index, deleteProduct,}) => {
+    const [modalVisible, setModalVisible] = useState(false)
     const navigation = useNavigation()
-    console.log("category", item.category)
-    return(
+    // console.log("item",deleteProduct)
+    // console.log("props",prop)
+    
+    return (
+      
         <View>
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(false)
+                }}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <TouchableOpacity
+                            underlayColor="#E8E8E8"
+                            onPress={() => {
+                                setModalVisible(false)
+                            }}
+                            style={{
+                                alignSelf: "flex-end",
+                                position: "absolute",
+                                top: 5,
+                                right: 10
+                            }}
+                        >
+                            <Icon name="close" size={20} />
+                        </TouchableOpacity>
+
+                        {/* <Button 
+                            onPress={() => [ navigation.navigate("ProductForm", { item}),
+                            setModalVisible(false)
+                        ]}
+                            title="Edit"
+                        >
+                            <Text style={styles.textStyle}>Edit</Text>
+                        </Button> */}
+                        <EasyButton
+                            medium
+                            secondary
+                            onPress={() => [navigation.navigate("ProductForm", { item }),
+                            setModalVisible(false)
+                            ]}
+                            title="Edit"
+                        >
+                            <Text style={styles.textStyle}>Edit</Text>
+                        </EasyButton>
+                        <EasyButton
+                            medium
+                            danger
+                            onPress={() => [deleteProduct(item._id), setModalVisible(false)]}
+                            title="delete"
+                        >
+                            <Text style={styles.textStyle}>Delete</Text>
+                        </EasyButton>
+
+                    </View>
+                </View>
+            </Modal>
             <TouchableOpacity
                 style={[styles.container, {
                     backgroundColor: index % 2 == 0 ? "white" : "gainsboro"
                 }]}
+                onPress={() => {
+                    navigation.navigate("Product Detail", { item })
+                }}
+                onLongPress={() => setModalVisible(true)}
+
             >
-                <Image 
+                <Image
                     source={{
                         uri: item.image
-                        ? item.image
-                        : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png'
+                            ? item.image
+                            : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png'
                     }}
                     resizeMode="contain"
                     style={styles.image}

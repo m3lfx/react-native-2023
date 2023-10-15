@@ -19,6 +19,7 @@ import {
 } from "native-base";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from "react-native-vector-icons/FontAwesome";
+import EasyButton from "../../Shared/StyledComponents/EasyButton"
 
 
 var { height, width } = Dimensions.get("window");
@@ -60,23 +61,23 @@ const Cart = (props) => {
                 </HStack>
             </Box>
         </TouchableHighlight>;
-   
 
-    const renderHiddenItem = (cartItems) => 
+
+    const renderHiddenItem = (cartItems) =>
         <TouchableOpacity
             onPress={() => dispatch(actions.removeFromCart(cartItems.item))}
         >
             {/* <View style={styles.hiddenContainer}  > */}
-                {/* <Center style={styles.hiddenContainer}> */}
-                    <VStack alignItems="center" style={styles.hiddenButton} >
-                        <View >
-                            <Icon name="trash" color={"white"} size={30} bg="red" />
-                            <Text color="white" fontSize="xs" fontWeight="medium">
-                                Delete
-                            </Text>
-                        </View>
-                    </VStack>
-                {/* </Center> */}
+            {/* <Center style={styles.hiddenContainer}> */}
+            <VStack alignItems="center" style={styles.hiddenButton} >
+                <View >
+                    <Icon name="trash" color={"white"} size={30} bg="red" />
+                    <Text color="white" fontSize="xs" fontWeight="medium">
+                        Delete
+                    </Text>
+                </View>
+            </VStack>
+            {/* </Center> */}
             {/* </View> */}
         </TouchableOpacity>;
 
@@ -110,11 +111,18 @@ const Cart = (props) => {
                     <Text style={styles.price}>$ {total.toFixed(2)}</Text>
                 </HStack>
                 <HStack justifyContent="space-between">
-                    <Button alignItems="center" onPress={() => dispatch(actions.clearCart())} > Clear</Button>
+                    <EasyButton
+                        danger
+                        medium
+                        alignItems="center"
+                        onPress={() => dispatch(actions.clearCart())} ><Text style={{ color: 'white' }}>Clear</Text></EasyButton>
                 </HStack>
                 <HStack justifyContent="space-between">
                     {/* <Button alignItems="center" colorScheme="primary">Check Out</Button> */}
-                    <Button alignItems="center" colorScheme="primary" onPress={() => navigation.navigate('Checkout')}>Check Out</Button>
+                    {/* <Button alignItems="center" colorScheme="primary" onPress={() => navigation.navigate('Checkout')}>Check Out</Button> */}
+                    <EasyButton secondary
+                        medium alignItems="center" colorScheme="primary" onPress={() => navigation.navigate('Checkout')}><Text style={{ color: 'white' }}>Checkout</Text></EasyButton>
+
                 </HStack>
             </VStack>
         </>

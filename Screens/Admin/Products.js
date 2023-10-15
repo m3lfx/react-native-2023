@@ -7,10 +7,11 @@ import {
     StyleSheet,
     Dimensions,
     Container,
-   
+    RefreshControl,
+
     Button
 } from "react-native";
-import { Input, VStack, Heading,Box } from "native-base"
+import { Input, VStack, Heading, Box } from "native-base"
 import Icon from "react-native-vector-icons/FontAwesome"
 import { useFocusEffect } from "@react-navigation/native"
 import { Searchbar } from 'react-native-paper';
@@ -19,14 +20,49 @@ import ListItem from "./ListItem"
 import axios from "axios"
 import baseURL from "../../assets/common/baseurl"
 import AsyncStorage from '@react-native-async-storage/async-storage'
-  
+import Toast from "react-native-toast-message";
+
 var { height, width } = Dimensions.get("window")
 
+const ListHeader = () => {
+    return (
+        <View
+            elevation={1}
+            style={styles.listHeader}
+        >
+            <View style={styles.headerItem}></View>
+            <View style={styles.headerItem}>
+                <Text style={{ fontWeight: '600' }}>Brand</Text>
+            </View>
+            <View style={styles.headerItem}>
+                <Text style={{ fontWeight: '600' }}>Name</Text>
+            </View>
+            <View style={styles.headerItem}>
+                <Text style={{ fontWeight: '600' }}>Category</Text>
+            </View>
+            <View style={styles.headerItem}>
+                <Text style={{ fontWeight: '600' }}>Price</Text>
+            </View>
+        </View>
+    )
+}
 const Products = (props) => {
     const [productList, setProductList] = useState();
     const [productFilter, setProductFilter] = useState();
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState();
+    const [refreshing, setRefreshing] = useState(false);
+
+    const searchProduct = (text) => {
+        if (text === "") {
+            setProductFilter(productList)
+        }
+        setProductFilter(
+            productList.filter((i) => 
+                i.name.toLowerCase().includes(text.toLowerCase())
+            )
+        )
+    }
 
     useFocusEffect(
         useCallback(
@@ -35,7 +71,7 @@ const Products = (props) => {
                 AsyncStorage.getItem("jwt")
                     .then((res) => {
                         setToken(res)
-                       
+
                     })
                     .catch((error) => console.log(error))
 
@@ -58,28 +94,76 @@ const Products = (props) => {
         )
     )
 
+    const deleteProduct = (id) => {
+        console.log("id", id)
+        axios
+            .delete(`${baseURL}products/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((res) => {
+                const products = productFilter.filter((item) => item.id !== id)
+                setProductFilter(products)
+                Toast.show({
+                    topOffset: 60,
+                    type: "success",
+                    text1: "Product Deleted",
+                    
+                  });
+            })
+            .catch((error) => console.log(error));
+    }
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            axios
+                    .get(`${baseURL}products`)
+                    .then((res) => {
+                        // console.log(res.data)
+                        setProductList(res.data);
+                        setProductFilter(res.data);
+                        setLoading(false);
+                    })
+          setRefreshing(false);
+        }, 2000);
+      }, []);
+
 
 
     return (
-       <Box flex={1}>
-        <Searchbar width="80%"
-            placeholder="Search"
-        //   onChangeText={onChangeSearch}
-        //   value={searchQuery}
-        />
-        <FlatList 
-            data={productFilter}
-            renderItem={({ item, index }) => (
-                <ListItem 
-                    item={item}
-                    
-                    index={index}
-                   
+        <Box flex={1}>
+            <Searchbar width="80%"
+                placeholder="Search"
+                containerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 5}}
+                onChangeText={(text) => searchProduct(text)}
+            //   value={searchQuery}
+            />
+            {loading ? (
+                <View style={styles.spinner}>
+                    <ActivityIndicator size="large" color="red" />
+                </View>
+            ) : (
+                
+                <FlatList
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                    data={productFilter}
+                    ListHeaderComponent={ListHeader}
+                    renderItem={({ item, index }) => (
+                        <ListItem
+                            item={item}
+                            //  {...item}
+                            index={index}
+                            deleteProduct={deleteProduct}
+                            
+                        />
+                    )}
+                    keyExtractor={(item) => item._id}
                 />
             )}
-            keyExtractor={(item) => item._id}
-          />
-       </Box>     
+
+        </Box>
     );
 }
 
