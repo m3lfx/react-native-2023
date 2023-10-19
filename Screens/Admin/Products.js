@@ -59,7 +59,7 @@ const Products = (props) => {
             setProductFilter(productList)
         }
         setProductFilter(
-            productList.filter((i) => 
+            productList.filter((i) =>
                 i.name.toLowerCase().includes(text.toLowerCase())
             )
         )
@@ -108,8 +108,8 @@ const Products = (props) => {
                     topOffset: 60,
                     type: "success",
                     text1: "Product Deleted",
-                    
-                  });
+
+                });
             })
             .catch((error) => console.log(error));
     }
@@ -118,50 +118,50 @@ const Products = (props) => {
         setRefreshing(true);
         setTimeout(() => {
             axios
-                    .get(`${baseURL}products`)
-                    .then((res) => {
-                        // console.log(res.data)
-                        setProductList(res.data);
-                        setProductFilter(res.data);
-                        setLoading(false);
-                    })
-          setRefreshing(false);
+                .get(`${baseURL}products`)
+                .then((res) => {
+                    // console.log(res.data)
+                    setProductList(res.data);
+                    setProductFilter(res.data);
+                    setLoading(false);
+                })
+            setRefreshing(false);
         }, 2000);
-      }, []);
+    }, []);
 
 
 
     return (
         <Box flex={1}>
             <View style={styles.buttonContainer}>
-            <EasyButton
-                secondary
-                medium
-                onPress={() => props.navigation.navigate("Orders")}
-            >
-                <Icon name="shopping-bag" size={18} color="white" />
-                <Text style={styles.buttonText}>Orders</Text>
-            </EasyButton>
-            <EasyButton
-                secondary
-                medium
-                onPress={() => props.navigation.navigate("ProductForm")}
-            >
-                <Icon name="plus" size={18} color="white" />
-                <Text style={styles.buttonText}>Products</Text>
-            </EasyButton>
-            <EasyButton
-                secondary
-                medium
-                onPress={() => props.navigation.navigate("Categories")}
-            >
-                <Icon name="plus" size={18} color="white" />
-                <Text style={styles.buttonText}>Categories</Text>
-            </EasyButton>
-        </View>
+                <EasyButton
+                    secondary
+                    medium
+                    onPress={() => props.navigation.navigate("Orders")}
+                >
+                    <Icon name="shopping-bag" size={18} color="white" />
+                    <Text style={styles.buttonText}>Orders</Text>
+                </EasyButton>
+                <EasyButton
+                    secondary
+                    medium
+                    onPress={() => props.navigation.navigate("ProductForm")}
+                >
+                    <Icon name="plus" size={18} color="white" />
+                    <Text style={styles.buttonText}>Products</Text>
+                </EasyButton>
+                <EasyButton
+                    secondary
+                    medium
+                    onPress={() => props.navigation.navigate("Categories")}
+                >
+                    <Icon name="plus" size={18} color="white" />
+                    <Text style={styles.buttonText}>Categories</Text>
+                </EasyButton>
+            </View>
             <Searchbar width="80%"
                 placeholder="Search"
-                containerStyle={{backgroundColor: 'white', borderWidth: 1, borderRadius: 5}}
+                containerStyle={{ backgroundColor: 'white', borderWidth: 1, borderRadius: 5 }}
                 onChangeText={(text) => searchProduct(text)}
             //   value={searchQuery}
             />
@@ -170,11 +170,11 @@ const Products = (props) => {
                     <ActivityIndicator size="large" color="red" />
                 </View>
             ) : (
-                
+
                 <FlatList
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  }
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
                     data={productFilter}
                     ListHeaderComponent={ListHeader}
                     renderItem={({ item, index }) => (
@@ -183,7 +183,7 @@ const Products = (props) => {
                             //  {...item}
                             index={index}
                             deleteProduct={deleteProduct}
-                            
+
                         />
                     )}
                     keyExtractor={(item) => item._id}
